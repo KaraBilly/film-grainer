@@ -161,12 +161,14 @@ export function renderFilm(
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
 
-  // Draw source with flip + rotation.
+  // Draw source with flip + rotation, scaled to fit the (possibly capped) buffer.
+  const dw = sw * scale
+  const dh = sh * scale
   ctx.save()
   ctx.translate(w / 2, h / 2)
   ctx.rotate((transform.rotation * Math.PI) / 180)
   ctx.scale(transform.flipX ? -1 : 1, transform.flipY ? -1 : 1)
-  ctx.drawImage(source, -sw / 2, -sh / 2, sw, sh)
+  ctx.drawImage(source, -dw / 2, -dh / 2, dw, dh)
   ctx.restore()
 
   // Color grade (exposure / contrast / saturation / temperature / tint).
