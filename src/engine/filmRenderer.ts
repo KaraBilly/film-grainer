@@ -108,6 +108,33 @@ function drawVignette(ctx: CanvasRenderingContext2D, w: number, h: number, amoun
   ctx.restore()
 }
 
+// Center-crop a source image to a width/height ratio (null = original).
+export function cropSource(
+  source: CanvasImageSource,
+  sw: number,
+  sh: number,
+  ratio: number | null,
+): { src: CanvasImageSource; w: number; h: number } {
+  if (!ratio) return { src: source, w: sw, h: sh }
+  const srcRatio = sw / sh
+  let cw: number
+  let ch: number
+  if (ratio > srcRatio) {
+    cw = sw
+    ch = sw / ratio
+  } else {
+    ch = sh
+    cw = sh * ratio
+  }
+  const sx = (sw - cw) / 2
+  const sy = (sh - ch) / 2
+  const c = document.createElement('canvas')
+  c.width = Math.max(1, Math.round(cw))
+  c.height = Math.max(1, Math.round(ch))
+  c.getContext('2d')!.drawImage(source, sx, sy, cw, ch, 0, 0, c.width, c.height)
+  return { src: c, w: c.width, h: c.height }
+}
+
 export function renderFilm(
   source: CanvasImageSource,
   sw: number,

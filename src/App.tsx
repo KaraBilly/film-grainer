@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from './store'
-import { editorStore, setHasImage } from './editorStore'
-import { renderFilm } from './engine/filmRenderer'
+import { editorStore, setHasImage, applyPreset } from './editorStore'
+import { renderFilm, cropSource } from './engine/filmRenderer'
 import { Toolbar } from './components/Toolbar'
 import { AdjustPanel } from './components/AdjustPanel'
 import { PresetStrip } from './components/PresetStrip'
 import { CropModal } from './components/CropModal'
 import { AuthModal } from './components/AuthModal'
+import { FilmGallery } from './components/FilmGallery'
 import { Dropzone } from './components/Dropzone'
 import { IconDownload, IconUser } from './components/icons'
 
@@ -16,27 +17,6 @@ interface SourceImage {
   h: number
 }
 
-function cropSource(source: SourceImage, ratio: number | null): { src: HTMLImageElement | HTMLCanvasElement; w: number; h: number } {
-  if (!ratio) return { src: source.img, w: source.w, h: source.h }
-  const srcRatio = source.w / source.h
-  let cw: number
-  let ch: number
-  if (ratio > srcRatio) {
-    cw = source.w
-    ch = source.w / ratio
-  } else {
-    ch = source.h
-    cw = source.h * ratio
-  }
-  const sx = (source.w - cw) / 2
-  const sy = (source.h - ch) / 2
-  const c = document.createElement('canvas')
-  c.width = Math.max(1, Math.round(cw))
-  c.height = Math.max(1, Math.round(ch))
-  c.getContext('2d')!.drawImage(source.img, sx, sy, cw, ch, 0, 0, c.width, c.height)
-  return { src: c, w: c.width, h: c.height }
-}
-
 export default function App() {
   const { params, transform, crop, hasImage } = useStore(editorStore)
   const [source, setSource] = useState<SourceImage | null>(null)
@@ -44,6 +24,7 @@ export default function App() {
   const [showPresets, setShowPresets] = useState(false)
   const [showCrop, setShowCrop] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [showGallery, setShowGallery] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -67,7 +48,7 @@ export default function App() {
     const canvas = canvasRef.current
     if (!canvas) return
     const raf = requestAnimationFrame(() => {
-      const { src, w, h } = cropSource(source, crop.ratio)
+      const { src, w, h } = cropSource(source.img, source.w, source.h, crop.ratio)
       renderFilm(src, w, h, params, transform, canvas)
     })
     return () => cancelAnimationFrame(raf)
@@ -100,6 +81,7 @@ export default function App() {
       <Toolbar
         onUpload={() => fileRef.current?.click()}
         onCrop={() => setShowCrop(true)}
+        onOpenGallery={() => setShowGallery(true)}
         showPresets={showPresets}
         showAdjust={showAdjust}
         onTogglePresets={() => setShowPresets((v) => !v)}
@@ -131,6 +113,20 @@ export default function App() {
       {/* Modals */}
       {showCrop && source && <CropModal onClose={() => setShowCrop(false)} />}
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+      {showGallery && source && (
+        <FilmGallery
+          source={source.img}
+          sw={source.w}
+          sh={source.h}
+          transform={transform}
+          cropRatio={crop.ratio}
+          onClose={() => setShowGallery(false)}
+          onApply={(preset) => {
+            applyPreset(preset.name, preset.params)
+            setShowGallery(false)
+          }}
+        />
+      )}
 
       {/* Hidden file input (shared by toolbar + dropzone) */}
       <input

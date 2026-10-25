@@ -568,3 +568,140 @@ button:disabled {
 .muted {
   color: var(--muted);
 }
+
+/* Film gallery overlay */
+.gallery {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(16, 16, 16, 0.97);
+  overflow-y: auto;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.gallery__header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+.gallery__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.gallery-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gallery-cell__frame {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1c1c1c;
+  border: 1px solid var(--line-soft);
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.gallery-cell__frame:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+.gallery-cell__frame canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gallery-cell__download {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease;
+}
+.gallery-cell__frame:hover .gallery-cell__download {
+  opacity: 1;
+}
+.gallery-cell__download:hover {
+  background: rgba(90, 158, 199, 0.85);
+}
+.gallery-cell__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 2px;
+}
+.gallery-cell__name {
+  font-size: 11px;
+  color: var(--pale);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gallery-cell__badge {
+  flex: 0 0 auto;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.gallery-cell__badge--color {
+  color: var(--alert);
+  background: rgba(255, 220, 139, 0.12);
+}
+.gallery-cell__badge--bw {
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.08);
+}
+.gallery__progress {
+  position: relative;
+  width: 180px;
+  height: 22px;
+  border-radius: 6px;
+  background: #262626;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.gallery__progress-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--primary);
+  transition: width 0.1s ease;
+}
+.gallery__progress-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #fff;
+}

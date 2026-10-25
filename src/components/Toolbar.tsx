@@ -13,11 +13,13 @@ import {
   IconSliders,
   IconReset,
   IconClose,
+  IconGrid,
 } from './icons'
 
 interface ToolbarProps {
   onUpload: () => void
   onCrop: () => void
+  onOpenGallery: () => void
   showPresets: boolean
   showAdjust: boolean
   onTogglePresets: () => void
@@ -27,6 +29,7 @@ interface ToolbarProps {
 export function Toolbar({
   onUpload,
   onCrop,
+  onOpenGallery,
   showPresets,
   showAdjust,
   onTogglePresets,
@@ -104,6 +107,9 @@ export function Toolbar({
 
         <span className="toolbar__divider" />
 
+        <button className="icon-btn" title="Film gallery" disabled={disabled} onClick={onOpenGallery}>
+          <IconGrid />
+        </button>
         <button
           className={`icon-btn ${showPresets ? 'active' : ''}`}
           title="Film presets"
