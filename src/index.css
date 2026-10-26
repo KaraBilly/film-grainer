@@ -304,6 +304,15 @@ button:disabled {
   backdrop-filter: blur(12px);
   border: 1px solid var(--line-soft);
   z-index: 25;
+  cursor: grab;
+}
+.preset-strip:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.preset-strip.is-dragging,
+.preset-strip.is-dragging * {
+  cursor: grabbing !important;
 }
 .preset-chip {
   flex: 0 0 auto;
